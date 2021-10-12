@@ -116,6 +116,7 @@ var displayQuestion = function () {
   highScoreButtonEl.setAttribute("type", "button");
   highScoreButtonEl.setAttribute("class", "btn btn-link");
   highScoreButtonEl.setAttribute("id", "viewScores");
+  highScoreButtonEl.setAttribute("onclick", "viewHighScores()");
   highScoreButtonEl.textContent = "View High Scores";
   firstColEl.appendChild(highScoreButtonEl);
 
@@ -190,18 +191,11 @@ var countDown = function (timeLeft) {
 var answerQuestion = function (event) {
     // check if answer is correct
     if(event.path[0].id === myQuestions[i].correctAnswer) {
-      console.log("I am a genius");
-
       gradingEl.textContent = "Correct, collect your trophy.";
-
     } else {
-      console.log("I am a dummy");
-
       gradingEl.textContent = "Wrong, minus 10 seconds";
       
-      console.log(newTime);
       newTime -= 10;
-      console.log(newTime);
       
       countDown(newTime);
     }
@@ -225,24 +219,21 @@ var answerQuestion = function (event) {
 var endTest = function () {
   clearInterval(timerTest);
 
-  console.log(newTime);
+  
 
   gradingEl.innerHTML = "";
 
+  // clears the webpage
   var mainEl = document.querySelector("#main-div");
   mainEl.innerHTML = "";
 
-  // var overEl = document.getElementById("over");
-  // mainEl.appendChild(overEl);
+  // tells the user their score
   var congratsEl = document.createElement("p");
-  // congratsEl.setAttribute("id", "")
   congratsEl.setAttribute("class", "text-center");
   congratsEl.textContent = "Your final score is: " + newTime + ". Congratulations!";
   mainEl.appendChild(congratsEl);
-  
 
-  
-
+  // creates input element
   var inputDivEl = document.createElement("div");
   mainEl.appendChild(inputDivEl);
   var inputPaEl = document.createElement("p");
@@ -250,12 +241,42 @@ var endTest = function () {
   inputDivEl.appendChild(inputPaEl);
 
   var inputEl = document.createElement("input");
+  inputEl.setAttribute("id", "initials");
   inputDivEl.appendChild(inputEl);
-  
-  console.log(inputDivEl.value);
 
-  
-  
+  // calls getInputValue() when we click submit
+  var inputButtonEl = document.createElement("button");
+  inputButtonEl.setAttribute("type", "button");
+  inputButtonEl.setAttribute("onclick", "getInputValue();");
+  inputButtonEl.textContent = "Submit";
+  inputDivEl.appendChild(inputButtonEl);
+
+}
+
+var getInputValue = function () {
+  var userInitial = document.getElementById("initials").value;
+
+  console.log(newTime); 
+
+  // stores user name and timeLeft into a variable
+  var score = [userInitial + " - " + newTime];
+  console.log(score);
+
+  var oldScores = JSON.parse(localStorage.getItem("newScores"));
+  console.log(oldScores);
+
+  if (oldScores != null) {
+    oldScores.push(score);
+    console.log(oldScores);
+    localStorage.setItem("newScores", JSON.stringify(oldScores));
+
+  } else {
+    localStorage.setItem("newScores", JSON.stringify(score));
+  }
+
+  var mainEl = document.querySelector("#main-div");
+  mainEl.innerHTML = "Thank you for playing!";
+
 }
 
 var removeStart = function () {
@@ -269,6 +290,25 @@ var beginTest = function () {
   displayQuestion();
   countDown(timeLeft);
   timerTest = setInterval(countDown, 1000);
+}
+
+var viewHighScores = function () {
+  clearInterval(timerTest);
+
+  var mainEl = document.querySelector("#main-div");
+  mainEl.innerHTML = "<h1 class='text-center'>High Scores!</h1>";
+
+  var updatedScores = JSON.parse(localStorage.getItem("newScores"));
+
+  console.log(updatedScores.length);
+
+  for (i = 0; i < updatedScores.length; i++) {
+    var printScore = document.createElement("p");
+    printScore.setAttribute("class", "text-center");
+    printScore.textContent = updatedScores[i];
+    mainEl.appendChild(printScore);
+  }
+
 }
 
 startTest();
