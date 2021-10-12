@@ -7,7 +7,7 @@ const myQuestions = [
       c: "True/False",
       d: "None of the above",
     },
-    correctAnswer: "c",
+    correctAnswer: "answerC",
   },
   {
     question: "How do you add a function to an HTML Button?",
@@ -17,7 +17,7 @@ const myQuestions = [
       c: "addEventListener()",
       d: "createElement()",
     },
-    correctAnswer: "c",
+    correctAnswer: "answerC",
   },
   {
     question:
@@ -28,7 +28,7 @@ const myQuestions = [
       c: "appendChild()",
       d: "removeAttribute()",
     },
-    correctAnswer: "a",
+    correctAnswer: "answerA",
   },
   {
     question: "What type of data can a Javascript array store?",
@@ -38,7 +38,7 @@ const myQuestions = [
       c: "booleans",
       d: "all of the above",
     },
-    correctAnswer: "d",
+    correctAnswer: "answerD",
   },
   {
     question: "What is NOT a way to create a function in Javascript?",
@@ -48,15 +48,27 @@ const myQuestions = [
       c: "function () {}",
       d: "none of the above",
     },
-    correctAnswer: "c",
+    correctAnswer: "answerC",
   },
 ];
 var i = 0;
 
 var timeLeft = 90;
 var newTime = timeLeft;
+var timerTest;
+
+var gradingEl = document.createElement("p");
+gradingEl.setAttribute("class", "text-center");
+gradingEl.innerText = "";
+var bodyEl = document.getElementsByTagName("BODY")[0];
+
+// set up third column for timer
+var thirdColEl = document.createElement("div");
+thirdColEl.setAttribute("class", "col-3");
+thirdColEl.setAttribute("id", "timer");
 
 var startTest = function () {
+
   // creating container div for the start test button
   var mainEl = document.querySelector("#main-div");
 
@@ -79,12 +91,12 @@ var startTest = function () {
   firstColEl.appendChild(startButtonEl);
 
   // when startButtonEl is clicked, we begin the test
-  startButtonEl.addEventListener("click", beginTest, removeStart);
+  startButtonEl.addEventListener("click", beginTest);
 };
 
 // change test to quiz
-var beginTest = function () {
-    countDown(timeLeft);
+var displayQuestion = function () {
+  
   var mainEl = document.querySelector("#main-div");
   mainEl.innerHTML = "";
 
@@ -112,10 +124,6 @@ var beginTest = function () {
   secondColEl.setAttribute("class", "col-6 text-center");
   secondColEl.setAttribute("id", "quiz");
 
-  // loop through questions
-  //for(var i = 0; i < myQuestions.length; i++) {
-
-  console.log(myQuestions[i]);
   // ask the question
   var questionH1El = document.createElement("h1");
   questionH1El.textContent = myQuestions[i].question;
@@ -125,97 +133,142 @@ var beginTest = function () {
   secondColEl.appendChild(listOfAnswersEl);
 
   // ANSWER A
-  // encompasses each answer in an label
-  var answerLabelOneEl = document.createElement("label");
-  answerLabelOneEl.textContent = myQuestions[i].answers.a;
-  listOfAnswersEl.appendChild(answerLabelOneEl);
-  // creates an input for them to click
   var answerOneEl = document.createElement("input");
   answerOneEl.setAttribute("type", "button");
-  answerOneEl.setAttribute("name", "answerA");
-  answerOneEl.setAttribute("onclick", "answerQuestion()");
-  answerLabelOneEl.appendChild(answerOneEl);
+  answerOneEl.setAttribute("id", "answerA");
+  answerOneEl.setAttribute("onclick", "answerQuestion(event)");
+  answerOneEl.setAttribute("value", myQuestions[i].answers.a);
+  listOfAnswersEl.appendChild(answerOneEl);
+  
 
   // ANSWER B
-  // encompasses each answer in an label
-  // var answerLabelTwoEl = document.createElement("label");
-  // answerLabelTwoEl.textContent = myQuestions[i].answers.b;
-  // listOfAnswersEl.appendChild(answerLabelTwoEl);
-  // creates an input for them to click
   var answerTwoEl = document.createElement("input");
   answerTwoEl.setAttribute("type", "button");
   answerTwoEl.setAttribute("id", "answerB");
-  answerTwoEl.setAttribute("onclick", "answerQuestion()");
+  answerTwoEl.setAttribute("onclick", "answerQuestion(event)");
   answerTwoEl.setAttribute("value", myQuestions[i].answers.b);
   listOfAnswersEl.appendChild(answerTwoEl);
   //answerLabelTwoEl.textContent = myQuestions[i].answers.b;
 
   // ANSWER C
-  // encompasses each answer in an label
-  var answerLabelThreeEl = document.createElement("label");
-  answerLabelThreeEl.textContent = myQuestions[i].answers.c;
-  listOfAnswersEl.appendChild(answerLabelThreeEl);
-  // creates an input for them to click
   var answerThreeEl = document.createElement("input");
   answerThreeEl.setAttribute("type", "button");
   answerThreeEl.setAttribute("id", "answerC");
-  answerThreeEl.setAttribute("onclick", "answerQuestion()");
-  answerLabelThreeEl.appendChild(answerThreeEl);
+  answerThreeEl.setAttribute("onclick", "answerQuestion(event)");
+  answerThreeEl.setAttribute("value", myQuestions[i].answers.c);
+  listOfAnswersEl.appendChild(answerThreeEl);
 
   // ANSWER D
-  // encompasses each answer in an label
-  var answerLabelFourEl = document.createElement("label");
-  answerLabelFourEl.textContent = myQuestions[i].answers.d;
-  listOfAnswersEl.appendChild(answerLabelFourEl);
-  // creates an input for them to click
   var answerFourEl = document.createElement("input");
   answerFourEl.setAttribute("type", "button");
   answerFourEl.setAttribute("id", "answerD");
-  answerFourEl.setAttribute("onclick", "answerQuestion()");
-  answerLabelFourEl.appendChild(answerFourEl);
-  //}
+  answerFourEl.setAttribute("onclick", "answerQuestion(event)");
+  answerFourEl.setAttribute("value", myQuestions[i].answers.d);
+  listOfAnswersEl.appendChild(answerFourEl);
 
   rowEl.appendChild(secondColEl);
 
-  // set up third column for timer
-  var thirdColEl = document.createElement("div");
-  thirdColEl.setAttribute("class", "col-3");
-  thirdColEl.setAttribute("id", "timer");
   thirdColEl.textContent = "You have " + newTime + " second(s) left.";
   rowEl.appendChild(thirdColEl);
 };
 
-var countDown = function (timeLeft) {;
-    console.log("hello", timeLeft);
-  setInterval(function () {
+var countDown = function (timeLeft) {
+  timeLeft = newTime;
     timeLeft--;
 
     document.getElementById("timer").innerHTML =
       "You have " + timeLeft + " second(s) left.";
 
     if (timeLeft <= 0) {
+      clearInterval(timerTest);
       document.getElementById("over").innerHTML =
         "You have lost the game. Pack your bags and get out of here.";
     }
     newTime = timeLeft;
-  }, 1000);
 };
 
-var answerQuestion = function () {
-  i++;
-  beginTest();
-    console.log(newTime);
-    countDown(newTime);
-  // check if answer is correct
+var answerQuestion = function (event) {
+    // check if answer is correct
+    if(event.path[0].id === myQuestions[i].correctAnswer) {
+      console.log("I am a genius");
+
+      gradingEl.textContent = "Correct, collect your trophy.";
+
+    } else {
+      console.log("I am a dummy");
+
+      gradingEl.textContent = "Wrong, minus 10 seconds";
+      
+      console.log(newTime);
+      newTime -= 10;
+      console.log(newTime);
+      
+      countDown(newTime);
+    }
+    
+    //timeLeft = newTime;
+    bodyEl.appendChild(gradingEl);
+    
+    
+  
   // check where timer is
+  i++;
+
+  if (timeLeft <= 0 || i >= myQuestions.length) {
+    endTest();
+  } else {
+    displayQuestion();
+  }
+  
 };
+
+var endTest = function () {
+  clearInterval(timerTest);
+
+  console.log(newTime);
+
+  gradingEl.innerHTML = "";
+
+  var mainEl = document.querySelector("#main-div");
+  mainEl.innerHTML = "";
+
+  // var overEl = document.getElementById("over");
+  // mainEl.appendChild(overEl);
+  var congratsEl = document.createElement("p");
+  // congratsEl.setAttribute("id", "")
+  congratsEl.setAttribute("class", "text-center");
+  congratsEl.textContent = "Your final score is: " + newTime + ". Congratulations!";
+  mainEl.appendChild(congratsEl);
+  
+
+  
+
+  var inputDivEl = document.createElement("div");
+  mainEl.appendChild(inputDivEl);
+  var inputPaEl = document.createElement("p");
+  inputPaEl.textContent = "Please Input your initials";
+  inputDivEl.appendChild(inputPaEl);
+
+  var inputEl = document.createElement("input");
+  inputDivEl.appendChild(inputEl);
+  
+  console.log(inputDivEl.value);
+
+  
+  
+}
 
 var removeStart = function () {
   var removeStartButtonEl = document.getElementById("start");
   //removes start button
-  //var timeLeft = 90;
-    //countDown(timeLeft);
   removeStartButtonEl.remove();
 };
+
+var beginTest = function () {
+  removeStart();
+  displayQuestion();
+  countDown(timeLeft);
+  timerTest = setInterval(countDown, 1000);
+}
 
 startTest();
